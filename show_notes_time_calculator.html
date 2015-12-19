@@ -2,40 +2,777 @@
 <head>
   <title>A Tool for Adding to your Time Stamped Show Notes</title>
   <script language="Ruby">
+  </script>
+  <meta name="description" content="This is a calculator for updating time stamps.">
+<style>
+  table, th, td {
+    font-family:"Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size:14pt;
+    border: 0px solid black;
+    border-collapse: collapse;
+    border-spacing: 5px;
+  }
+
+  h1 {
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 20pt;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+    padding-left: 10;
+    padding-right: 10;
+    padding-top: 10;
+    padding-bottom: 10;
+  }
+
+  h2 {
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 16;
+    color: grey;
+  }
+
+  p, input {
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    color: black;
+    font-size: 14;
+  }
+</style>
+<script language="JavaScript"><!--
+
+// Takes a string in the form 'h:m:s.s', 'm:s.s', or 's' and converts to seconds
+  function stringToSeconds (timeString) {
+  var timeSeparator = document.timeCalc.timeSeparator.value
+  var sign = 1	// -1 for negative number
+
+  if (timeString == "") return 0
+  if (timeString.substring(0,1) == "-") {
+    sign = -1
+    timeString = timeString.substring(1,timeString.length)
+  }
+  var hr = 0
+  var mn = 0
+  var sec = 0
+  var timeArray = timeString.split(timeSeparator)
+  switch (timeArray.length) {
+    case 1:
+      if (document.timeCalc.singleFormat[0].checked) {		// hr
+        hr = Number(timeArray[0])
+      } else if (document.timeCalc.singleFormat[1].checked) {		// min
+        mn = Number(timeArray[0])
+      } else {								// sec
+        sec = Number(timeArray[0])
+      }
+      break;
+    case 2:
+      if (document.timeCalc.timeFormat[0].checked) {		// hr:min
+        hr = Number(timeArray[0])
+        mn = Number(timeArray[1])
+      } else {								// min:sec
+        mn = Number(timeArray[0])
+        sec = Number(timeArray[1])
+      }
+      break;
+    case 3:
+      hr  = Number(timeArray[0])
+      mn = Number(timeArray[1])
+      sec = Number(timeArray[2])
+      break;
+  }
+  //alert(hr + ", " + mn + ", " + sec)
+  //alert(sign * (hr*3600 + mn*60 + sec))
+  return sign * (hr*3600 + mn*60 + sec)
+  }
+
+// Takes an hr string, mn string, and sec string and converts to seconds
+  function stringToSeconds3 (hrString, minString, secString) {
+  return Number(hrString)*3600 + Number(minString)*60 + Number(secString)
+  }
+
+// Takes seconds and converts to h:m:s.s
+  function secondsToString (seconds) {
+  var myForm = document.timeCalc
+  var timeSeparator = document.timeCalc.timeSeparator.value
+  var sign = ""	// "-" for negative number
+
+  if (seconds < 0) {
+    sign = "-"
+    seconds = -1 * seconds
+  }
+
+  var hr = Math.floor(seconds/3600)
+  var mn = Math.floor((seconds%3600)/60)
+  //var mn = Math.floor(seconds/60)%60
+  var sec = round3(seconds%60)
+  var timeString = ""
+
+  //if (myForm.outputFormat[0].checked || myForm.outputFormat[2].checked || myForm.outputFormat[5].checked) {
+  //	var timeString = "" + sec
+  //else if (myForm.outputFormat[1].checked || myForm.outputFormat[4].checked) {
+  //	var timeString = "" + mn
+  //else
+  //	var timeString = "" + hr
+  //}
+
+  if (myForm.outputFormat[0].checked) {		// hr:min:sec
+    if (hr > 0) {
+      if (mn > 9) timeString = hr + timeSeparator + mn + timeSeparator
+      else timeString = hr + timeSeparator + "0" + mn + timeSeparator
+      if (sec > 9) timeString = timeString + sec
+      else timeString = timeString + "0" + sec
+    }
+    else if (mn > 0) {
+      if (sec > 9) timeString = mn + timeSeparator + sec
+      else timeString = mn + timeSeparator + "0" + sec
+    }
+    else timeString = sec
+  }
+
+  else if (myForm.outputFormat[1].checked) {		// hr:min
+    mn = mn + round3(sec/60.0)
+    if (hr > 0) {
+      if (mn >= 10) timeString = hr + timeSeparator + mn
+      else timeString = hr + timeSeparator + "0" + mn
+    }
+    else timeString = mn
+  }
+
+  else if (myForm.outputFormat[2].checked) {		// min:sec
+    mn = hr*60 + mn
+    if (mn > 0) {
+      if (sec > 9) timeString = mn + timeSeparator + sec
+      else timeString = mn + timeSeparator + "0" + sec
+    }
+    else timeString = sec
+  }
+
+  else if (myForm.outputFormat[3].checked) {		// hr
+    timeString = round3(seconds/3600)
+  }
+
+  else if (myForm.outputFormat[4].checked) {		// min
+    timeString = round3(seconds/60)
+  }
+
+  else {		// sec
+    timeString = round3(seconds)
+  }
+  return sign + timeString
+}
+
+  function round2(myNumber) {
+      return Math.floor(Math.round(myNumber * 100)) / 100
+  }
+
+  function round3(myNumber) {
+      return Math.floor(Math.round(myNumber * 1000)) / 1000
+  }
+
+  function clearFields() {
+  document.timeCalc.time1.value = ""
+  document.timeCalc.time2.value = ""
+  document.timeCalc.time3.value = ""
+  document.timeCalc.time4.value = ""
+  document.timeCalc.time5.value = ""
+  document.timeCalc.time6.value = ""
+  document.timeCalc.time7.value = ""
+  document.timeCalc.time8.value = ""
+  document.timeCalc.time9.value = ""
+  document.timeCalc.time10.value = ""
+  document.timeCalc.time11.value = ""
+  document.timeCalc.time12.value = ""
+  document.timeCalc.time13.value = ""
+  document.timeCalc.time14.value = ""
+  document.timeCalc.time15.value = ""
+  document.timeCalc.time16.value = ""
+  document.timeCalc.time17.value = ""
+  document.timeCalc.time18.value = ""
+  document.timeCalc.time19.value = ""
+  document.timeCalc.time20.value = ""
+  document.timeCalc.time21.value = ""
+  document.timeCalc.time22.value = ""
+  document.timeCalc.time23.value = ""
+  document.timeCalc.time24.value = ""
+  document.timeCalc.time25.value = ""
+  document.timeCalc.time26.value = ""
+  document.timeCalc.time27.value = ""
+  document.timeCalc.time28.value = ""
+  document.timeCalc.time29.value = ""
+  document.timeCalc.time30.value = ""
+  document.timeCalc.time31.value = ""
+  document.timeCalc.time32.value = ""
+  document.timeCalc.time33.value = ""
+  document.timeCalc.time34.value = ""
+  document.timeCalc.time35.value = ""
+  document.timeCalc.time36.value = ""
+  document.timeCalc.time37.value = ""
+  document.timeCalc.time38.value = ""
+  document.timeCalc.time39.value = ""
+  document.timeCalc.time40.value = ""
+
+  document.timeCalc.cumtime1.value = ""
+  document.timeCalc.cumtime2.value = ""
+  document.timeCalc.cumtime3.value = ""
+  document.timeCalc.cumtime4.value = ""
+  document.timeCalc.cumtime5.value = ""
+  document.timeCalc.cumtime6.value = ""
+  document.timeCalc.cumtime7.value = ""
+  document.timeCalc.cumtime8.value = ""
+  document.timeCalc.cumtime9.value = ""
+  document.timeCalc.cumtime10.value = ""
+  document.timeCalc.cumtime11.value = ""
+  document.timeCalc.cumtime12.value = ""
+  document.timeCalc.cumtime13.value = ""
+  document.timeCalc.cumtime14.value = ""
+  document.timeCalc.cumtime15.value = ""
+  document.timeCalc.cumtime16.value = ""
+  document.timeCalc.cumtime17.value = ""
+  document.timeCalc.cumtime18.value = ""
+  document.timeCalc.cumtime19.value = ""
+  document.timeCalc.cumtime20.value = ""
+  document.timeCalc.cumtime21.value = ""
+  document.timeCalc.cumtime22.value = ""
+  document.timeCalc.cumtime23.value = ""
+  document.timeCalc.cumtime24.value = ""
+  document.timeCalc.cumtime25.value = ""
+  document.timeCalc.cumtime26.value = ""
+  document.timeCalc.cumtime27.value = ""
+  document.timeCalc.cumtime28.value = ""
+  document.timeCalc.cumtime29.value = ""
+  document.timeCalc.cumtime30.value = ""
+  document.timeCalc.cumtime31.value = ""
+  document.timeCalc.cumtime32.value = ""
+  document.timeCalc.cumtime33.value = ""
+  document.timeCalc.cumtime34.value = ""
+  document.timeCalc.cumtime35.value = ""
+  document.timeCalc.cumtime36.value = ""
+  document.timeCalc.cumtime37.value = ""
+  document.timeCalc.cumtime38.value = ""
+  document.timeCalc.cumtime39.value = ""
+  document.timeCalc.cumtime40.value = ""
+
+  document.timeCalc.timeMin.value = ""
+  document.timeCalc.timeMax.value = ""
+  document.timeCalc.timeAvg.value = ""
+  document.timeCalc.timeTotal.value = ""
+  document.timeCalc.timeMin2.value = ""
+  document.timeCalc.timeMax2.value = ""
+  document.timeCalc.timeAvg2.value = ""
+  document.timeCalc.timeTotal2.value = ""
+
+      document.timeCalc.time1.focus()
+  }
+
+  function addTimes() {
+  var seconds = stringToSeconds(document.timeCalc.time1.value)
+  document.timeCalc.sec1.value = seconds
+  var totalTime = seconds
+  var minsec = seconds
+  var maxsec = seconds
+  var count = 0
+  if (seconds != 0) {
+    document.timeCalc.cumtime1.value = secondsToString(totalTime)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime1.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time2.value)
+  document.timeCalc.sec2.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime2.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime2.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time3.value)
+  document.timeCalc.sec3.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime3.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime3.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time4.value)
+  document.timeCalc.sec4.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime4.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime4.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time5.value)
+  document.timeCalc.sec5.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime5.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime5.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time6.value)
+  document.timeCalc.sec6.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime6.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime6.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time7.value)
+  document.timeCalc.sec7.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime7.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime7.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time8.value)
+  document.timeCalc.sec8.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime8.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime8.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time9.value)
+  document.timeCalc.sec9.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime9.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime9.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time10.value)
+  document.timeCalc.sec10.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime10.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime10.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time11.value)
+  document.timeCalc.sec11.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime11.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime11.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time12.value)
+  document.timeCalc.sec12.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime12.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime12.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time13.value)
+  document.timeCalc.sec13.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime13.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime13.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time14.value)
+  document.timeCalc.sec14.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime14.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime14.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time15.value)
+  document.timeCalc.sec15.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime15.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime15.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time16.value)
+  document.timeCalc.sec16.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime16.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime16.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time17.value)
+  document.timeCalc.sec17.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime17.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime17.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time18.value)
+  document.timeCalc.sec18.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime18.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime18.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time19.value)
+  document.timeCalc.sec19.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime19.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime19.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time20.value)
+  document.timeCalc.sec20.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime20.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime20.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time21.value)
+  document.timeCalc.sec21.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime21.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime21.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time22.value)
+  document.timeCalc.sec22.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime22.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime22.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time23.value)
+  document.timeCalc.sec23.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime23.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime23.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time24.value)
+  document.timeCalc.sec24.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime24.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime24.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time25.value)
+  document.timeCalc.sec25.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime25.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime25.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time26.value)
+  document.timeCalc.sec26.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime26.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime26.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time27.value)
+  document.timeCalc.sec27.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime27.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime27.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time28.value)
+  document.timeCalc.sec28.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime28.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime28.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time29.value)
+  document.timeCalc.sec29.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime29.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime29.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time30.value)
+  document.timeCalc.sec30.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime30.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime30.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time31.value)
+  document.timeCalc.sec31.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime31.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime31.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time32.value)
+  document.timeCalc.sec32.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime32.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime32.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time33.value)
+  document.timeCalc.sec33.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime33.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime33.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time34.value)
+  document.timeCalc.sec34.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime34.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime34.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time35.value)
+  document.timeCalc.sec35.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime35.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime35.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time36.value)
+  document.timeCalc.sec36.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime36.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime36.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time37.value)
+  document.timeCalc.sec37.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime37.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime37.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time38.value)
+  document.timeCalc.sec38.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime38.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime38.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time39.value)
+  document.timeCalc.sec39.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime39.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime39.value = ""
+
+  seconds = stringToSeconds(document.timeCalc.time40.value)
+  document.timeCalc.sec40.value = seconds
+  totalTime = totalTime + seconds
+  if (seconds != 0) {
+    document.timeCalc.cumtime40.value = secondsToString(totalTime)
+    minsec = Math.min(minsec, seconds)
+    maxsec = Math.max(maxsec, seconds)
+    count = count + 1
+  } else
+    document.timeCalc.cumtime40.value = ""
+
+  if (count > 0) {
+    document.timeCalc.timeMin.value = document.timeCalc.timeMin2.value = secondsToString(minsec)
+    document.timeCalc.timeMax.value = document.timeCalc.timeMax2.value = secondsToString(maxsec)
+    document.timeCalc.timeAvg.value = document.timeCalc.timeAvg2.value = secondsToString(totalTime / count)
+  } else {
+    document.timeCalc.timeMin.value = document.timeCalc.timeMin2.value = ""
+    document.timeCalc.timeMax.value = document.timeCalc.timeMax2.value = ""
+    document.timeCalc.timeAvg.value = document.timeCalc.timeAvg2.value = ""
+  }
+  document.timeCalc.timeTotal.value = document.timeCalc.timeTotal2.value = secondsToString(totalTime)
+  //setTimeFromSec(totalTime, 0)
+  }
+
+function checkKeyPress(nextFieldName, evt) {
+  var charCode = (navigator.appName == "Netscape") ? evt.which : evt.keyCode
+  if (charCode == 13) {		// 13 = enter/return
+    eval("document.timeCalc." + nextFieldName + ".focus()")		//Go to next field
+  }
+  else if (charCode == 67) {		// 67 = Shift-C
+    clearFields()
+    return false;
+  }
+  return true
+}
+
+function secToMins(sec) {
+  return sec/60.0
+}
+
+function secToHours(sec) {
+  return sec/3600.0
+}
+
+function minsToSec(mn) {
+  return mn*60.0
+}
+
+function hoursToSec(hr) {
+  return hr*3600.0
+}
+
+//	var myDate = new Date(2000, 0, 0)
+//	myDate.setSeconds
+//	alert(myDate.toString())
+
+// -->
+</script>
 </head>
 
-<!-- Just the Title -->
 <body>
-<center>Enter your Show Notes in The Field Below:</center>
-<!-- For that user can paste code into -->
- <form name="notes_input" align="center">
- <table border="0">
-  <tbody>
-      <tr>
-        <td align="left" valign="top" style="padding-right: 40px;">
-      </tr>
-  </tbody>
+<h1>Here is a time calculator for updating show notes:</h1>
+
 
 <!-- For the user to select time to add to time stamp  -->
-<center>What time would you like to add? Format note: 00:00</center>
- <form name="updated_time_stamps" align="center">
- <table border="0">
-    <tbody>
-      <tr>
-        <td align="left" valign="top" style="padding-right: 40px;">
-      </tr>
-    </tbody>
+<table width="100%" cellspacing="0" cellpadding="0">
 
-<!-- This will be a form filled by Ruby with updated time stamps  -->
-<center>Here are your show notes with updated time stamps:</center>
- <form name="updated_time_stamps" align="center">
- <table border="0">
-    <tbody>
-      <tr>
-        <td align="left" valign="top" style="padding-right: 40px;">
-      </tr>
-    </tbody>
-
+  <tr>
+    <th width="40%">Original Time Stamp</th>
+    <th width="10%">Add</th>
+    <th width="10%">Total</th>
+    <th width="40%">Updated Time Stamp</th>
+  </tr>
+  <tr>
+    <td><input type="text" name="time1" size="10" onchange="addTimes()" onkeypress="checkKeyPress('time2', event)"></td>
+    <td><input type="text" name="time2" size="10" onchange="addTimes()" onkeypress="checkKeyPress('time3', event)"></td>
+    <td><input type="text" name="cumtime1" size="10"></td>
+    <td><input type="text" name="cumtime2" size="10"></td>
+  </tr>
+</table>
 
 </body>
 </html>
