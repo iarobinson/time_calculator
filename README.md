@@ -13,7 +13,7 @@ When we mix the podcast together with the other elements (audio intro or sponsor
 
 For example, when we mix a podcast with a 15 second intro and a 40 second introduction, the time stamps are off by 55 seconds. In order to keep the time stamps accurate, we must add that time to the time listed in the show notes.
 
-Aspirations:
+- Aspirations:
 
 1. Make a webpage that calculates the time, allowing for quick copy and pasting.
   - This will be cool for a start, but the user will have to copy and paste the times which is time consuming and silly.
