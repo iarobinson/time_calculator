@@ -3,11 +3,18 @@ A program that takes in time stamped show notes and exports the notes with time 
 
 - The Reasoning Behind This Tool
 
-One of the first steps in producing a podcast is when we take notes while listening to the raw audio. We listen through each show to ensure it sounds excellent and we can fix up any sound problems. When finished with the audio, the notes come out looking something like this:
+One of the first steps in producing a podcast is when we take notes while listening to the raw audio. We listen through each show to ensure it sounds excellent and we can fix up any sound problems. When finished with the audio, the notes come out looking something like this in html:
 
--The origin story of guest [03:10]
--How they met Arnold Schwarzenegger [4:10]
--Why they sold their business [1:45:00]
+<h3>Show Notes</h3>
+<ul>
+ 	<li>On Thomas Paine and Stoic Philosophy [6:11]</li>
+ 	<li>The Chainsaw Story and how it supported his writing career [8:09]</li>
+ 	<li>On athleticism and long distance running times [12:31]</li>
+ 	<li>How to develop a lean writing style [13:31]</li>
+	<li>Why Sebastian Junger was drawn to journalism and the Navajo long distance runners [15:09]</li>
+  <li>If you could put one billboard anywhere, where would you put it and what would it say? [2:16:22]</li>
+  <li>Final requests for the audience [2:18:27]</li>
+</ul>
 
 When we mix the podcast together with the other elements (audio intro or sponsors for example) the time stamps become inaccurate. In order to sync them, we add the amount of time in the podcast file before the interview to the notes above.
 
