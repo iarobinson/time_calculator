@@ -1,5 +1,4 @@
 
-
 def identify_time_stamp(string)
   characters = string.split("")
   i = 0
@@ -9,6 +8,14 @@ def identify_time_stamp(string)
     end
     i += 1
   end
+end
+
+def understand_format(string)
+
+end
+
+def time_calc(string)
+
 end
 
 puts "Please enter the time to be added to each show note? (Format [0:00:00])"
