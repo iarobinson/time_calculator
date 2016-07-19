@@ -30,8 +30,23 @@ function formatTimeToInteger(str) {
   console.log(totalSeconds)
 }
 
+// Validated for min:sec working to have it work for Hours
+
 function intToStr(num) {
-    // This takes a integer of seconds and returns a string eg -> 100 => 1:40
+  var hr = parseInt(num / 3600);
+  var min = parseInt(num / 60).toString();
+  var sec = (num % 60).toString();
+
+
+  if (num < 10) {
+    return "0:0" + dispSec;
+  } else if (num < 60) {
+    return "0:" + dispSec;
+  } else if (num < 600) {
+    return dispMin + ":" + dispSec;
+  }
+  var min = parseInt(num / 60);
+  var hr = parseInt(dispMin / 60);
 }
 
 function timeCalculator(timeBlockToAdjust, incrementation){
@@ -39,4 +54,4 @@ function timeCalculator(timeBlockToAdjust, incrementation){
   return intToStr(incrementedTotalTime)
 }
 
-console.log(updateTimeStampNotes("<li>Note here [0:05]</li>", "0:20") + " <=> 0:25")
+// console.log(updateTimeStampNotes("<li>Note here [0:05]</li>", "0:20") + " <=> 0:25")
